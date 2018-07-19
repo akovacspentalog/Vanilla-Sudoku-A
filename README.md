@@ -1,1 +1,1 @@
-# Vanilla-Sudoku-S
+# Vanilla-Sudoku-A
