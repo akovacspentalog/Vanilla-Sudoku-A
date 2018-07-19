@@ -1,0 +1,35 @@
+{
+  "name": "sudoku",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "precommit": "npm run lint",
+    "lint": "eslint --ext .js,.jsx .",
+    "lint:fix": "eslint --ext .js,.jsx . --fix",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akovacspentalog/Vanilla-Sudoku-A.git"
+  },
+  "keywords": [
+    "sudoku",
+    "vanilla"
+  ],
+  "author": "agherasim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akovacspentalog/Vanilla-Sudoku-A/issues"
+  },
+  "homepage": "https://github.com/akovacspentalog/Vanilla-Sudoku-A#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.9.1",
+    "husky": "^0.14.3"
+  }
+}
