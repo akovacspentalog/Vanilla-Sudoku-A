@@ -24,7 +24,9 @@
     "url": "https://github.com/akovacspentalog/Vanilla-Sudoku-A/issues"
   },
   "homepage": "https://github.com/akovacspentalog/Vanilla-Sudoku-A#readme",
-  "dependencies": {},
+  "dependencies": {
+    "winston": "^3.0.0"
+  },
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",

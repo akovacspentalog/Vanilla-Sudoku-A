@@ -1,7 +1,8 @@
 const fs = require('fs');
 const http = require('http');
 
-const PATH_TO_SRC = '../src';
+const logger = require('./logger');
+const { srcPath } = require('./configs');
 
 const returnBadRequestResponse = (res) => {
   res.writeHead(404, { 'Content-Type': 'text/html' });
@@ -36,6 +37,7 @@ const determineContentType = (extension) => {
 };
 
 const returnFile = (path, req, res) => {
+  logger.mainLog.debug(`requested path: ${path}`);
   const dotIndex = path.substring(path.length - 5).lastIndexOf('.');
   const extension = dotIndex !== -1 ? path.substr(path.lastIndexOf('.')) : undefined;
   const contentType = determineContentType(extension);
@@ -44,18 +46,22 @@ const returnFile = (path, req, res) => {
   if (!extension) {
     filePath += '.js';
   }
+  logger.mainLog.debug(`actual path: ${filePath}`);
 
   fs.readFile(filePath, (err, data) => useDataFunction(err, data, contentType, req, res));
 };
 
 http.createServer((req, res) => {
+  logger.logRequest(req, res);
   const { url, method } = req;
 
   if (method !== 'GET') {
     returnBadRequestResponse(res);
   } else if (url === '/') {
-    returnFile(`${PATH_TO_SRC}/main.html`, req, res);
+    returnFile(`${srcPath}/main.html`, req, res);
   } else {
-    returnFile(`${PATH_TO_SRC + url}`, req, res);
+    returnFile(`${srcPath + url}`, req, res);
   }
 }).listen(8080);
+
+logger.mainLog.info('Server started!');
