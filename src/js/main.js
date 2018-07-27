@@ -40,16 +40,19 @@ const generateHtml = () => {
   addGameSection();
 };
 
-const selectGame = () => game;
+const selectGame = () => game.map((cell) => {
+  Object.assign(cell, { originalField: true });
+  return cell;
+});
 
-const newGame = (selectedGameData) => {
-  GameManager.initGame(selectedGameData);
+const newGame = (selectedGameData, getPreviousGame) => {
+  GameManager.initGame(selectedGameData, getPreviousGame);
 };
 
 
 document.addEventListener('DOMContentLoaded', () => {
   generateHtml();
-  newGame(selectGame());
+  newGame(selectGame(), true);
   document.addEventListener('endGame', () => {
     showEndGameSection();
   });

@@ -4,23 +4,56 @@ const applyEventListeners = (gameManager) => {
   });
 };
 
+class StateManager {
+  static deleteSavedGame() {
+    localStorage.removeItem('gameBoard');
+  }
+
+  static saveGame(gameBoard) {
+    localStorage.setItem('gameBoard', JSON.stringify(gameBoard));
+  }
+
+  static getSavedGame() {
+    return JSON.parse(localStorage.getItem('gameBoard'));
+  }
+}
+
+
 class GameManager {
-  constructor(gameData) {
-    this.initialBoard = GameManager.convertInitialData(gameData);
-    this.initialiseGameBoard();
+  constructor(gameData, getPreviousGame) {
+    const previousGame = getPreviousGame ? StateManager.getSavedGame() : undefined;
+    if (previousGame) {
+      this.gameBoard = previousGame;
+    } else {
+      this.initialiseGameBoard(gameData);
+    }
     this.applyInitialBoard();
     applyEventListeners(this);
+    if (previousGame) {
+      this.validateBoard();
+    }
   }
 
 
-  initialiseGameBoard() {
+  initialiseGameBoard(gameData) {
     this.gameBoard = [];
     for (let y = 0; y < 9; y += 1) {
       this.gameBoard[y] = [];
       for (let x = 0; x < 9; x += 1) {
-        this.gameBoard[y][x] = this.getCoords(y, x);
+        this.gameBoard[y][x] = {
+          value: 0,
+          originalField: false
+        };
       }
     }
+    gameData.forEach(({
+      y, x, value, originalField
+    }) => {
+      this.gameBoard[y][x] = {
+        value: value.toString(),
+        originalField
+      };
+    });
   }
 
   applyInitialBoard() {
@@ -29,21 +62,30 @@ class GameManager {
       const cell = cells.item(i);
       const coordy = cell.getAttribute('coordy');
       const coordx = cell.getAttribute('coordx');
-      const value = this.getCoords(coordy - 1, coordx - 1);
+      const { value = 0, originalField = false } = this.getCellData(coordy - 1, coordx - 1);
       if (value > 0) {
         cell.setAttribute('value', value);
         cell.firstElementChild.innerHTML = value;
-        cell.classList.add('initialValue');
       } else {
         cell.setAttribute('value', 0);
+      }
+
+      if (originalField) {
+        cell.classList.add('initialValue');
+      } else {
         cell.onclick = GameManager.generateOnClickEventForCell(coordy, coordx);
       }
     }
   }
 
 
-  getCoords(coordY, coordX) {
-    return this.initialBoard[coordY] && this.initialBoard[coordY][coordX] ? this.initialBoard[coordY][coordX].toString() : '';
+  getCellData(coordY, coordX) {
+    return this.gameBoard[coordY]
+    && this.gameBoard[coordY][coordX]
+    && this.gameBoard[coordY][coordX].value ? {
+        value: this.gameBoard[coordY][coordX].value,
+        originalField: this.gameBoard[coordY][coordX].originalField
+      } : '';
   }
 
   onCellClicked(coordY, coordX) {
@@ -56,7 +98,8 @@ class GameManager {
       cell.firstElementChild.innerHTML = newValue;
     }
     cell.setAttribute('value', newValue);
-    this.gameBoard[coordY - 1][coordX - 1] = newValue;
+    this.gameBoard[coordY - 1][coordX - 1].value = newValue;
+    StateManager.saveGame(this.gameBoard);
     this.validateBoard();
   }
 
@@ -93,12 +136,13 @@ class GameManager {
       return;
     }
     document.dispatchEvent(new Event('endGame'));
+    StateManager.deleteSavedGame();
   }
 
   validateRows(number) {
     for (let y = 0; y < 9; y += 1) {
       const row = this.gameBoard[y];
-      const count = row.filter(value => value === number.toString()).length;
+      const count = row.filter(({ value }) => value.toString() === number.toString()).length;
       if (count > 1) {
         new Array(...document.querySelectorAll(`.gameCell[coordy="${y + 1}"][value="${number}"]`))
           .filter(cell => !cell.classList.contains('invalid'))
@@ -110,7 +154,7 @@ class GameManager {
   validateColumns(number) {
     for (let x = 0; x < 9; x += 1) {
       const count = this.gameBoard.map(row => row[x])
-        .filter(value => value === number.toString()).length;
+        .filter(({ value }) => value.toString() === number.toString()).length;
       if (count > 1) {
         new Array(...document.querySelectorAll(`.gameCell[coordx="${x + 1}"][value="${number}"]`))
           .filter(cell => !cell.classList.contains('invalid'))
@@ -125,7 +169,8 @@ class GameManager {
         let count = 0;
         for (let y = 0; y < 3; y += 1) {
           for (let x = 0; x < 3; x += 1) {
-            if (this.gameBoard[squareY * 3 + y][squareX * 3 + x] === number.toString()) {
+            if (this.gameBoard[squareY * 3 + y][squareX * 3 + x].value.toString()
+                === number.toString()) {
               count += 1;
             }
             if (count >= 2) {
@@ -150,20 +195,8 @@ class GameManager {
     }
   }
 
-  static initGame(gameData) {
-    return new GameManager(gameData);
-  }
-
-  static convertInitialData(gameData) {
-    const resultData = [];
-    gameData.forEach(({ y, x, value }) => {
-      if (!resultData[y]) {
-        resultData[y] = [];
-      }
-      resultData[y][x] = value;
-    });
-
-    return resultData;
+  static initGame(gameData, getPreviousGame) {
+    return new GameManager(gameData, getPreviousGame);
   }
 
   static generateOnClickEventForCell(coordy, coordx) {
