@@ -36,7 +36,7 @@ const game = [
 
   { y: 8, x: 4, value: 8 },
   { y: 8, x: 7, value: 7 },
-  { y: 8, x: 8, value: 9 },
+  { y: 8, x: 8, value: 9 }
 ];
 
 export default game;

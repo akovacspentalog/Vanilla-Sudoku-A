@@ -2,8 +2,9 @@
   "name": "sudoku",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "server/server.js",
   "scripts": {
+    "start": "node server/server.js",
     "precommit": "npm run lint",
     "lint": "eslint --ext .js,.jsx .",
     "lint:fix": "eslint --ext .js,.jsx . --fix",

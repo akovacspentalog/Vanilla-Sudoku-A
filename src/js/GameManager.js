@@ -171,8 +171,8 @@ class GameManager {
       const event = new CustomEvent('cellClicked', {
         detail: {
           y: `${coordy}`,
-          x: `${coordx}`,
-        },
+          x: `${coordx}`
+        }
       });
       document.dispatchEvent(event);
     };

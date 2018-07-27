@@ -49,8 +49,8 @@ const generateGameBoard = () => {
 const onClickGameNumberBtn = (value) => {
   const event = new CustomEvent('numberClicked', {
     detail: {
-      value,
-    },
+      value
+    }
   });
   document.dispatchEvent(event);
 };
