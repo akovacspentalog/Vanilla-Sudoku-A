@@ -105,6 +105,7 @@ div {
 }
 
 .gameCell.initialValue {
+    background-color: rgba(235, 235, 235, 0.76);
     font-weight: bold;
     font-family: "Arial", serif;
 

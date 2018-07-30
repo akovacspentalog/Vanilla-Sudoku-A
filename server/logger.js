@@ -1,7 +1,10 @@
-
+/**
+ * https://www.digitalocean.com/community/tutorials/how-to-use-winston-to-log-node-js-applications
+ * https://www.npmjs.com/package/logger-winston
+ */
 const winston = require('winston');
 const path = require('path');
-const { logPath } = require('./configs');
+const { logger: loggerConf } = require('./configs');
 
 // Set this to whatever, by default the path of the script.
 
@@ -16,7 +19,7 @@ const errorLog = winston.createLogger({
   format: customFormat,
   transports: [
     new winston.transports.File({
-      filename: path.join(logPath, 'errors.log'),
+      filename: path.join(loggerConf.logPath, 'errors.log'),
       // timestamp: () => new Date(),
       level: 'error'
     }),
@@ -32,12 +35,12 @@ const mainLog = winston.createLogger({
   format: customFormat,
   transports: [
     new winston.transports.File({
-      filename: path.join(logPath, 'main.log'),
-      level: 'info'
+      filename: path.join(loggerConf.logPath, 'main.log'),
+      level: loggerConf.lvl
     }),
     new winston.transports.Console({
       colorize: true,
-      level: 'info'
+      level: loggerConf.lvl
     })
   ]
 });
@@ -69,6 +72,6 @@ const logRequest = (req, res) => {
 
 module.exports = {
   errorLog,
-  mainLog,
+  log: mainLog,
   logRequest
 };

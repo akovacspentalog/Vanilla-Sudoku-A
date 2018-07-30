@@ -55,26 +55,31 @@ const onClickGameNumberBtn = (value) => {
   document.dispatchEvent(event);
 };
 
+const onClickNewGame = () => {
+  document.dispatchEvent(new Event('newGame'));
+};
+
+const createButton = (btnValue, text, onClickFunc) => {
+  const btn = document.createElement('BUTTON');
+  btn.classList.add('btn');
+  btn.classList.add('gameNumber');
+  btn.setAttribute('type', 'button');
+  btn.setAttribute('value', btnValue);
+  const btnText = document.createTextNode(text);
+  btn.appendChild(btnText);
+  btn.onclick = onClickFunc || (() => onClickGameNumberBtn(`${btnValue}`));
+  return btn;
+};
+
 const generateGameNumbers = () => {
   const gameNumbersDiv = document.createElement('div');
   gameNumbersDiv.classList.add('gameNumbers');
 
-  function createButton(btnValue, text) {
-    const btn = document.createElement('BUTTON');
-    btn.classList.add('btn');
-    btn.classList.add('gameNumber');
-    btn.setAttribute('type', 'button');
-    btn.setAttribute('value', btnValue);
-    const btnText = document.createTextNode(text);
-    btn.appendChild(btnText);
-    btn.onclick = () => onClickGameNumberBtn(`${btnValue}`);
-    gameNumbersDiv.appendChild(btn);
-  }
-
   for (let i = 1; i <= 9; i += 1) {
-    createButton(i, i);
+    gameNumbersDiv.appendChild(createButton(i, i));
   }
-  createButton('', 'Eraser');
+  gameNumbersDiv.appendChild(createButton('erase', 'Eraser'));
+  gameNumbersDiv.appendChild(createButton('new-game', 'New Game', onClickNewGame));
   return gameNumbersDiv;
 };
 

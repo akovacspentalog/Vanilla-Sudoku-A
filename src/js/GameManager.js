@@ -20,20 +20,25 @@ class StateManager {
 
 
 class GameManager {
-  constructor(gameData, getPreviousGame) {
-    const previousGame = getPreviousGame ? StateManager.getSavedGame() : undefined;
+  loadExistingGame() {
+    const previousGame = StateManager.getSavedGame();
     if (previousGame) {
       this.gameBoard = previousGame;
-    } else {
-      this.initialiseGameBoard(gameData);
-    }
-    this.applyInitialBoard();
-    applyEventListeners(this);
-    if (previousGame) {
+
+      this.applyInitialBoard();
+      applyEventListeners(this);
       this.validateBoard();
+      return true;
     }
+    return false;
   }
 
+  newGame(gameData) {
+    this.initialiseGameBoard(gameData);
+    this.applyInitialBoard();
+    applyEventListeners(this);
+    StateManager.saveGame(this.gameBoard);
+  }
 
   initialiseGameBoard(gameData) {
     this.gameBoard = [];
@@ -60,6 +65,7 @@ class GameManager {
     const cells = GameManager.getAllCells();
     for (let i = 0; i < cells.length; i += 1) {
       const cell = cells.item(i);
+      cell.classList.remove('invalid');
       const coordy = cell.getAttribute('coordy');
       const coordx = cell.getAttribute('coordx');
       const { value = 0, originalField = false } = this.getCellData(coordy - 1, coordx - 1);
@@ -68,11 +74,14 @@ class GameManager {
         cell.firstElementChild.innerHTML = value;
       } else {
         cell.setAttribute('value', 0);
+        cell.firstElementChild.innerHTML = '';
       }
 
       if (originalField) {
         cell.classList.add('initialValue');
+        cell.onclick = undefined;
       } else {
+        cell.classList.remove('initialValue');
         cell.onclick = GameManager.generateOnClickEventForCell(coordy, coordx);
       }
     }
@@ -195,8 +204,8 @@ class GameManager {
     }
   }
 
-  static initGame(gameData, getPreviousGame) {
-    return new GameManager(gameData, getPreviousGame);
+  static initGame() {
+    return new GameManager();
   }
 
   static generateOnClickEventForCell(coordy, coordx) {

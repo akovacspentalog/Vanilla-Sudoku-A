@@ -1,8 +1,9 @@
 const fs = require('fs');
 const http = require('http');
 
-const logger = require('./logger');
+const { logRequest, log: logger } = require('./logger');
 const { srcPath } = require('./configs');
+const gameFetcher = require('./GameFetcher');
 
 const returnBadRequestResponse = (res) => {
   res.writeHead(404, { 'Content-Type': 'text/html' });
@@ -37,7 +38,7 @@ const determineContentType = (extension) => {
 };
 
 const returnFile = (path, req, res) => {
-  logger.mainLog.debug(`requested path: ${path}`);
+  logger.debug(`requested path: ${path}`);
   const dotIndex = path.substring(path.length - 5).lastIndexOf('.');
   const extension = dotIndex !== -1 ? path.substr(path.lastIndexOf('.')) : undefined;
   const contentType = determineContentType(extension);
@@ -46,22 +47,33 @@ const returnFile = (path, req, res) => {
   if (!extension) {
     filePath += '.js';
   }
-  logger.mainLog.debug(`actual path: ${filePath}`);
+  logger.debug(`actual path: ${filePath}`);
 
   fs.readFile(filePath, (err, data) => useDataFunction(err, data, contentType, req, res));
 };
 
+const fetchGame = (req, res) => {
+  logger.debug('requested a game');
+
+  const game = gameFetcher.fetch();
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write(JSON.stringify(game));
+  res.end();
+};
+
 http.createServer((req, res) => {
-  logger.logRequest(req, res);
+  logRequest(req, res);
   const { url, method } = req;
 
   if (method !== 'GET') {
     returnBadRequestResponse(res);
   } else if (url === '/') {
     returnFile(`${srcPath}/main.html`, req, res);
+  } else if (url === '/getGame') {
+    fetchGame(req, res);
   } else {
     returnFile(`${srcPath + url}`, req, res);
   }
 }).listen(8080);
 
-logger.mainLog.info('Server started!');
+logger.info('Server started!');
