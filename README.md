@@ -8,7 +8,7 @@
 
 # Vanilla-Sudoku V3
 
-3. Create a backend API for the app adding features like login/number of sudoku resolved/ time taken/ fastes sudoku/ (use basic vanilla NodeJS server http service) What is package.json how ti import modules etc.
+3. Create a backend API for the app adding features like login/number of sudoku resolved/ time taken/ fastes sudoku/ (use basic vanilla NodeJS server http service) What is package.json how to import modules etc.
 
 # Vanilla-Sudoku V4
 

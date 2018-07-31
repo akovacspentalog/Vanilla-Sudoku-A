@@ -66,6 +66,7 @@ class GameManager {
     for (let i = 0; i < cells.length; i += 1) {
       const cell = cells.item(i);
       cell.classList.remove('invalid');
+      cell.classList.remove('marked');
       const coordy = cell.getAttribute('coordy');
       const coordx = cell.getAttribute('coordx');
       const { value = 0, originalField = false } = this.getCellData(coordy - 1, coordx - 1);
@@ -98,9 +99,12 @@ class GameManager {
   }
 
   onCellClicked(coordY, coordX) {
-    const newValue = GameManager.getMarkedValue();
+    let newValue = GameManager.getMarkedValue();
     if (!newValue && newValue !== '') {
       return;
+    }
+    if (newValue === 'erase') {
+      newValue = '';
     }
     const cell = document.querySelector(`[coordx="${coordX}"][coordy="${coordY}"]`);
     if (!cell.classList.contains('initialValue')) {

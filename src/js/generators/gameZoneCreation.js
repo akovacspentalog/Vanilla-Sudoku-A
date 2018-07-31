@@ -107,6 +107,14 @@ document.addEventListener('numberClicked', ({ detail: { value } }) => {
   if (newBtn) {
     newBtn.classList.add('marked');
   }
+
+  // unmark all cells with old value
+  const oldCells = new Array(...document.querySelectorAll('.gameCell.marked'));
+  oldCells.forEach(cell => cell.classList.remove('marked'));
+
+  // mark cells with same value
+  const cells = new Array(...document.querySelectorAll(`.gameCell[value="${value}"]`));
+  cells.forEach(cell => cell.classList.add('marked'));
 });
 
 export default generateGameZone;
